@@ -4,241 +4,230 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SPPG Creator Pro</title>
-    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@400;500;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;800&family=Pacifico&display=swap" rel="stylesheet">
     <style>
+        /* CSS Animatif & Glassmorphism Gen Z Vibe */
         :root {
-            --primary: #2563EB; 
-            --primary-hover: #1D4ED8;
-            --bg-color: #F3F4F6;
-            --card-bg: rgba(255, 255, 255, 0.85);
-            --text-dark: #1E293B;
-            --radius: 20px;
+            --primary: #7F00FF;
+            --secondary: #E100FF;
+            --bg-glass: rgba(255, 255, 255, 0.75);
+            --border-glass: rgba(255, 255, 255, 0.5);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
 
         body { 
-            font-family: 'Poppins', sans-serif; 
-            background: var(--bg-color); 
-            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
-            background-size: 20px 20px;
-            padding: 30px 15px; 
-            color: var(--text-dark);
-            margin: 0;
-        }
-
-        .main-wrapper { 
-            max-width: 1100px; 
-            margin: 0 auto; 
-            display: grid;
-            grid-template-columns: 1fr 1.2fr;
-            gap: 25px;
-        }
-
-        @media (max-width: 850px) {
-            .main-wrapper { grid-template-columns: 1fr; }
-        }
-
-        .header-title { 
-            color: var(--primary); 
-            font-family: 'Pacifico', cursive; 
-            font-size: 2.8rem;
-            margin: 0 0 5px 0;
-            text-shadow: 2px 2px 0px rgba(37, 99, 235, 0.15);
-            text-align: center;
-            grid-column: 1 / -1;
-        }
-
-        /* Bento Cards */
-        .bento-card {
-            background: var(--card-bg);
-            backdrop-filter: blur(12px);
-            padding: 25px;
-            border-radius: var(--radius);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.06);
-            border: 1px solid rgba(255,255,255,0.6);
-        }
-
-        /* Canvas Area */
-        .canvas-container {
+            font-family: 'Outfit', sans-serif; 
+            margin: 0; padding: 20px; 
+            background: linear-gradient(-45deg, #ff9a9e, #fecfef, #a1c4fd, #c2e9fb);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
             display: flex;
-            flex-direction: column;
-            gap: 15px;
+            justify-content: center;
+            color: #333;
         }
 
-        .canvas-wrapper {
-            position: relative; 
-            width: 100%; 
-            border-radius: var(--radius); 
-            overflow: hidden; 
-            box-shadow: 0 20px 40px rgba(37, 99, 235, 0.15);
-            border: 5px solid white;
+        @keyframes gradientBG {
+            0% {background-position: 0% 50%;}
+            50% {background-position: 100% 50%;}
+            100% {background-position: 0% 50%;}
+        }
+
+        .container { 
+            width: 100%; max-width: 650px; 
+            background: var(--bg-glass); 
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 30px; 
+            border-radius: 24px; 
+            border: 1px solid var(--border-glass);
+            box-shadow: var(--shadow); 
             transition: transform 0.3s ease;
         }
-        .canvas-wrapper:hover { transform: translateY(-5px); }
+
+        .header-section { text-align: center; margin-bottom: 25px; }
+        h2 { 
+            color: #111; margin: 0 0 5px 0; 
+            font-family: 'Pacifico', cursive; 
+            font-size: 32px;
+            background: -webkit-linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .subtitle { font-size: 14px; color: #555; font-weight: 500; }
+
+        /* Canvas & Drag-Drop UI */
+        .canvas-wrapper {
+            position: relative; width: 100%; max-width: 540px; margin: 0 auto;
+            border-radius: 20px; overflow: hidden; touch-action: none;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+            border: 3px dashed transparent;
+        }
+        .canvas-wrapper.drag-over {
+            border-color: var(--primary);
+            transform: scale(1.02);
+            box-shadow: 0 15px 30px rgba(127, 0, 255, 0.3);
+        }
+        .drag-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.8);
+            display: flex; justify-content: center; align-items: center;
+            font-size: 20px; font-weight: 800; color: var(--primary);
+            pointer-events: none; opacity: 0; transition: 0.3s;
+        }
+        .canvas-wrapper.drag-over .drag-overlay { opacity: 1; }
         canvas { width: 100%; height: auto; display: block; cursor: crosshair; }
 
-        /* Modern Inputs */
-        .controls-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .full-width { grid-column: 1 / -1; }
+        /* Form Controls */
+        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 25px; }
+        .full-width { grid-column: span 2; }
         
-        input[type="text"], input[type="number"] { 
-            width: 100%; 
-            padding: 12px 15px; 
-            background: #F8FAFC;
-            border: 2px solid #E2E8F0; 
-            border-radius: 12px; 
-            font-family: 'Poppins'; 
-            font-size: 13px; 
-            box-sizing: border-box; 
-            transition: all 0.3s ease;
+        .card-panel { 
+            background: rgba(255, 255, 255, 0.6); 
+            padding: 15px; border-radius: 16px; 
+            border: 1px solid rgba(255,255,255,0.8);
+            transition: 0.3s;
         }
+        .card-panel:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+
+        input { 
+            width: 100%; padding: 12px; 
+            border: 2px solid transparent; 
+            border-radius: 12px; font-family: 'Outfit'; font-size: 14px; 
+            box-sizing: border-box; background: rgba(255,255,255,0.9);
+            transition: 0.3s; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+        }
+        input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 4px rgba(127,0,255,0.1); }
         
-        input[type="text"]:focus, input[type="number"]:focus { 
-            border-color: var(--primary); 
-            background: white;
-            outline: none; 
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        label { font-size: 12px; font-weight: 800; color: #444; display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        .section-header { 
+            grid-column: span 2; background: linear-gradient(90deg, #111, #333); 
+            color: white; padding: 8px 15px; font-size: 13px; border-radius: 10px; 
+            margin-top: 15px; font-weight: 800; letter-spacing: 1px;
         }
 
-        label { 
-            font-size: 11px; 
-            font-weight: 700; 
-            color: var(--primary); 
-            margin-bottom: 6px; 
-            display: block;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .section-badge { 
-            background: #E0E7FF; 
-            color: var(--primary); 
-            padding: 8px 15px; 
-            font-size: 12px; 
-            border-radius: 8px; 
-            margin: 10px 0 5px 0; 
-            font-weight: 800; 
-            display: inline-block;
-        }
-
-        /* Bouncy Buttons */
-        .btn { 
-            color: white; 
-            padding: 16px; 
-            border: none; 
-            border-radius: 14px; 
-            font-size: 15px; 
-            font-weight: 700; 
-            cursor: pointer; 
-            width: 100%; 
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex; justify-content: center; align-items: center; gap: 8px;
-        }
-        .btn-primary { background: linear-gradient(135deg, var(--primary), #4F46E5); box-shadow: 0 10px 20px rgba(37, 99, 235, 0.25); }
-        .btn-success { background: linear-gradient(135deg, #10B981, #059669); box-shadow: 0 10px 20px rgba(16, 185, 129, 0.25); }
-        .btn:active { transform: scale(0.96); }
-        .btn:hover { filter: brightness(1.1); transform: translateY(-2px); }
-
-        /* File Input */
+        /* Modern Custom File Input */
         input[type="file"] {
-            padding: 10px; background: white; border: 2px dashed #CBD5E1; border-radius: 12px; cursor: pointer; width: 100%; box-sizing: border-box; font-size: 12px;
+            padding: 10px; background: #fff; border: 2px dashed #ccc; cursor: pointer; text-align: center;
         }
+        input[type="file"]:hover { border-color: var(--primary); background: rgba(127,0,255,0.05); }
 
-        /* Modals */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(5px);
-            display: none; justify-content: center; align-items: center; z-index: 1000;
+        /* Buttons Gen Z Style */
+        .btn-group { display: flex; gap: 10px; margin-top: 25px; }
+        button { 
+            color: white; padding: 16px; border: none; border-radius: 16px; 
+            font-size: 16px; font-weight: 800; font-family: 'Outfit'; 
+            cursor: pointer; width: 100%; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; gap: 8px;
         }
-        .modal-content {
-            background: white; padding: 30px; border-radius: 24px; max-width: 400px; width: 90%;
-            text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.2);
-            animation: popIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        @keyframes popIn { 0% { opacity: 0; transform: scale(0.8) translateY(20px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+        button:hover { transform: translateY(-4px) scale(1.02); }
+        button:active { transform: translateY(2px) scale(0.98); }
         
-        .comment-box { background: #F8FAFC; border-left: 4px solid var(--primary); padding: 12px; margin: 10px 0; text-align: left; border-radius: 0 12px 12px 0; font-size: 13px;}
-        .comment-user { font-weight: 700; color: var(--primary); font-size: 12px; margin-bottom: 3px;}
+        .btn-download { background: linear-gradient(135deg, #00F260, #0575E6); box-shadow: 0 8px 20px rgba(5, 117, 230, 0.3); }
+        .btn-copy { background: linear-gradient(135deg, #f12711, #f5af19); box-shadow: 0 8px 20px rgba(241, 39, 17, 0.3); }
+
+        /* Layer Buttons */
+        .layer-controls { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; }
+        .btn-layer { padding: 8px 15px; font-size: 12px; border-radius: 8px; background: #eee; color: #333; font-weight: 600; width: auto; box-shadow: none; }
+        .btn-layer:hover { background: #ddd; transform: none; }
+        .btn-layer.active { background: var(--primary); color: white; }
+        .btn-delete { background: #ff4757; color: white; padding: 8px 15px; border-radius: 8px; font-size: 12px; width: auto; box-shadow: none;}
+        
+        /* Checkbox modern */
+        .checkbox-wrapper { display: flex; align-items: center; gap: 8px; margin-top: 10px; background: #fff; padding: 10px 15px; border-radius: 10px; border: 1px solid #eee; }
+        .checkbox-wrapper input { width: 20px; height: 20px; accent-color: var(--primary); cursor: pointer; }
+        .checkbox-wrapper label { margin: 0; cursor: pointer; font-size: 13px; font-weight: 600; text-transform: none; }
+        
     </style>
 </head>
 <body>
 
-<h2 class="header-title">SPPG Creator Pro ✨</h2>
-
-<div class="main-wrapper">
-    <div class="canvas-container">
-        <div class="canvas-wrapper">
-            <canvas id="myCanvas" width="1080" height="1080"></canvas>
-        </div>
-        <div class="grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-            <button class="btn btn-primary" onclick="generateLiveLink()">🔗 Generate Live Link</button>
-            <button class="btn btn-success" onclick="downloadImage()">⬇️ Download PNG</button>
-        </div>
+<div class="container">
+    <div class="header-section">
+        <h2>SPPG Menu Pro ✨</h2>
+        <div class="subtitle">Designed by Fadlan Kharisma Aji Nugroho</div>
     </div>
 
-    <div class="bento-card">
-        <div class="controls-grid">
-            <div class="full-width">
-                <label>📸 Foto Makanan</label>
-                <input type="file" id="foodInput" accept="image/*">
+    <div class="canvas-wrapper" id="dropZone">
+        <div class="drag-overlay">✨ Drop Stiker Disini ✨</div>
+        <canvas id="myCanvas" width="1080" height="1080"></canvas>
+    </div>
+
+    <div class="controls">
+        <div class="card-panel full-width" style="border: 2px solid var(--primary); background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.6));">
+            <label>🖼️ Upload Background (Tersimpan Otomatis)</label>
+            <input type="file" id="bgInput" accept="image/*">
+            <div style="display:flex; justify-content: flex-end; margin-top: 8px;">
+                <button onclick="resetBackground()" style="background: #ff4757; padding: 8px 15px; font-size: 12px; width: auto; box-shadow: none;">🗑️ Reset BG</button>
+            </div>
+        </div>
+
+        <div class="card-panel full-width">
+            <label>✨ Upload / Drop Hiasan (Stiker)</label>
+            <input type="file" id="stickerInput" accept="image/*" multiple>
+            
+            <div class="checkbox-wrapper">
+                <input type="checkbox" id="autoRemoveBg" checked>
+                <label for="autoRemoveBg">Auto-Hapus Background Putih</label>
             </div>
             
-            <div class="full-width">
-                <label>✨ Upload Stiker / Ornamen</label>
-                <input type="file" id="stickerInput" accept="image/*" multiple>
-                <div style="margin-top: 8px; font-size: 12px; display: flex; align-items: center; gap: 5px;">
-                    <input type="checkbox" id="autoRemoveBg" style="width: auto; margin:0;" checked>
-                    <label style="margin:0; text-transform:none; color:#64748B;" for="autoRemoveBg">Auto-Hapus Background Putih</label>
+            <div id="selectedStickerUI" style="display:none; margin-top: 15px; padding-top: 15px; border-top: 2px dashed #ddd;">
+                <label>🎚️ Edit Stiker Terpilih</label>
+                <input type="range" id="stickerScale" min="0.1" max="3.0" step="0.1" value="1.0" oninput="resizeSelectedSticker()" style="margin-bottom:10px;">
+                <div class="layer-controls">
+                    <div style="display: flex; gap: 5px;">
+                        <button class="btn-layer" id="btnLayerBottom" onclick="setStickerLayer('bottom')">⏬ Belakang</button>
+                        <button class="btn-layer" id="btnLayerTop" onclick="setStickerLayer('top')">⏫ Depan</button>
+                    </div>
+                    <button class="btn-delete" onclick="deleteSelectedSticker()">🗑️ Hapus</button>
                 </div>
             </div>
-
-            <div class="full-width">
-                <div class="section-badge">INFO UTAMA</div>
+            <div id="noStickerMsg" style="margin-top:10px; font-size:12px; color:#888; font-style:italic; text-align: center;">
+                (Klik stiker di gambar untuk mengedit)
             </div>
-            <div class="full-width"><label>Tanggal</label><input type="text" id="dateText" value="Jumat, 9 Januari 2026" oninput="updateText('dateText', 0)"></div>
-            <div class="full-width"><label>Menu Utama</label><input type="text" id="menu1" value="Ayam Bakar Madu" oninput="updateText('menu1', 1)"></div>
-            
-            <div><label>Lauk 1</label><input type="text" id="menu2" value="Tahu Goreng" oninput="updateText('menu2', 2)"></div>
-            <div><label>Sayur</label><input type="text" id="menu3" value="Lalapan" oninput="updateText('menu3', 3)"></div>
-            <div><label>Buah</label><input type="text" id="menu4" value="Anggur Merah" oninput="updateText('menu4', 4)"></div>
-            <div><label>Nasi</label><input type="text" id="menu5" value="Nasi Putih" oninput="updateText('menu5', 5)"></div>
-            <div class="full-width"><label>Social Media</label><input type="text" id="tiktok" value="TikTok: @SppgPanjatan002" oninput="updateText('tiktok', 6)"></div>
-
-            <div class="full-width"><div class="section-badge">⚡ GIZI KECIL (KIRI)</div></div>
-            <div><label>Energi (kkal)</label><input type="number" id="k_energi" value="468" oninput="draw()"></div>
-            <div><label>Protein (gr)</label><input type="number" id="k_protein" value="22" oninput="draw()"></div>
-            <div><label>Lemak (gr)</label><input type="number" id="k_lemak" value="19" oninput="draw()"></div>
-            <div><label>Karbo (gr)</label><input type="number" id="k_karbo" value="52" oninput="draw()"></div>
-            
-            <div class="full-width"><div class="section-badge">🔥 GIZI BESAR (KANAN)</div></div>
-            <div><label>Energi (kkal)</label><input type="number" id="b_energi" value="594" oninput="draw()"></div>
-            <div><label>Protein (gr)</label><input type="number" id="b_protein" value="24" oninput="draw()"></div>
-            <div><label>Lemak (gr)</label><input type="number" id="b_lemak" value="20" oninput="draw()"></div>
-            <div><label>Karbo (gr)</label><input type="number" id="b_karbo" value="80" oninput="draw()"></div>
         </div>
-    </div>
-</div>
 
-<div class="modal-overlay" id="komenModal" onclick="closeModal('komenModal')">
-    <div class="modal-content" onclick="event.stopPropagation()">
-        <h3 style="margin-top:0; color:var(--primary); font-family:'Pacifico'; font-size: 24px;">🔥 15 Komen Terpedas</h3>
-        <p style="font-size: 13px; color: #64748B; margin-bottom: 20px;">Review jujur operasional hari ini:</p>
+        <div class="card-panel full-width">
+            <label>📸 Foto Makanan Utama</label>
+            <input type="file" id="foodInput" accept="image/*">
+        </div>
         
-        <div style="max-height: 250px; overflow-y: auto; padding-right: 10px;">
-            <div class="comment-box"><div class="comment-user">@siswa_lapar99</div>Ayam bakarnya enak banget kak, tapi nasinya kurang banyak! 😭</div>
-            <div class="comment-user">@guru_killer</div>Lalapannya tolong dicuci yang bersih ya, tadi ada yang layu sedikit.</div>
-            <div class="comment-box"><div class="comment-user">@kepsek_hits</div>Distribusi hari ini luar biasa cepat, pertahankan tim SPPG! 👏</div>
-            <div class="comment-box"><div class="comment-user">@tim_dapur</div>Tahu gorengnya besok ditambah bumbu kuning ya biar makin mantap!</div>
+        <div class="card-panel full-width">
+            <label>📅 Tanggal Menu</label>
+            <input type="date" id="datePicker">
         </div>
-        <button class="btn btn-primary" style="margin-top: 20px; padding: 12px;" onclick="closeModal('komenModal')">Tutup</button>
-    </div>
-</div>
+        
+        <div class="card-panel full-width">
+            <label>📱 Social Media</label>
+            <input type="text" id="tiktok" value="TikTok: @SppgPanjatan002" oninput="updateText('tiktok', 6)">
+        </div>
 
-<div class="modal-overlay" id="linkModal" onclick="closeModal('linkModal')">
-    <div class="modal-content" onclick="event.stopPropagation()">
-        <h3 style="margin-top:0; color:#10B981; font-family:'Pacifico'; font-size: 24px;">🌐 Live Link Created!</h3>
-        <p style="font-size: 13px; color: #64748B;">Hasil generate AI ini tidak akan hilang. Link aktif selama 24 jam full dan tampilannya persis sama di browser manapun.</p>
-        <input type="text" id="generatedLink" value="https://sppg-cloud.app/live/x7F9a2" readonly style="margin: 15px 0; text-align: center; color: var(--primary); font-weight: bold; background: #EFF6FF;">
-        <button class="btn btn-success" style="padding: 12px;" onclick="copyLink()">📋 Copy Link to Clipboard</button>
+        <div class="section-header">🍽️ DAFTAR MENU</div>
+        <div class="full-width"><input type="text" id="menu1" value="Ayam Bakar Madu" oninput="updateText('menu1', 1)"></div>
+        <div><input type="text" id="menu2" value="Tahu Goreng" oninput="updateText('menu2', 2)"></div>
+        <div><input type="text" id="menu3" value="Lalapan" oninput="updateText('menu3', 3)"></div>
+        <div><input type="text" id="menu4" value="Anggur Merah" oninput="updateText('menu4', 4)"></div>
+        <div><input type="text" id="menu5" value="Nasi Putih" oninput="updateText('menu5', 5)"></div>
+
+        <div class="section-header">⚡ GIZI KECIL (KIRI)</div>
+        <div><label>Energi</label><input type="number" id="k_energi" value="468" oninput="draw()"></div>
+        <div><label>Protein</label><input type="number" id="k_protein" value="22" oninput="draw()"></div>
+        <div><label>Lemak</label><input type="number" id="k_lemak" value="19" oninput="draw()"></div>
+        <div><label>Karbo</label><input type="number" id="k_karbo" value="52" oninput="draw()"></div>
+        <div class="full-width"><label>Serat</label><input type="number" id="k_serat" value="3" oninput="draw()"></div>
+
+        <div class="section-header">🔥 GIZI BESAR (KANAN)</div>
+        <div><label>Energi</label><input type="number" id="b_energi" value="594" oninput="draw()"></div>
+        <div><label>Protein</label><input type="number" id="b_protein" value="24" oninput="draw()"></div>
+        <div><label>Lemak</label><input type="number" id="b_lemak" value="20" oninput="draw()"></div>
+        <div><label>Karbo</label><input type="number" id="b_karbo" value="80" oninput="draw()"></div>
+        <div class="full-width"><label>Serat</label><input type="number" id="b_serat" value="3" oninput="draw()"></div>
+    </div>
+
+    <div class="btn-group">
+        <button class="btn-copy" onclick="copyImageToClipboard()">📋 Salin Gambar</button>
+        <button class="btn-download" onclick="downloadImage()">📥 Download (PNG)</button>
     </div>
 </div>
 
@@ -246,81 +235,408 @@
     const canvas = document.getElementById('myCanvas');
     const ctx = canvas.getContext('2d');
 
-    // --- PASTE KODE BASE64 BACKGROUND DI SINI ---
-    const backgroundBase64 = "data:image/jpeg;base64,..."; // Biarkan kosong/isi dengan kodemu
+    let bgImg = new Image();
+    let bgLoaded = false;
+    let foodImg = new Image();
+    let foodLoaded = false;
+
+    let stickers = [];
+    let selectedStickerIndex = -1;
     
-    let bgImg = new Image(); bgImg.src = backgroundBase64;
-    let foodImg = new Image(); let foodLoaded = false; let bgLoaded = false;
-    let stickers = []; let selectedStickerIndex = -1;
-    
+    // Teks Init - Menggunakan style yang proporsional
     let textObjects = [
-        { id: 'dateText', text: 'Jumat, 9 Januari 2026', x: 1020, y: 250, font: "600 24px 'Poppins'", align: 'right', color: '#1E293B', stroke: false },
-        { id: 'menu1', text: 'Ayam Bakar Madu', x: 540, y: 280, font: "400 38px 'Pacifico'", align: 'center', color: '#2563EB', stroke: true },
-        { id: 'menu2', text: 'Tahu Goreng', x: 180, y: 380, font: "600 22px 'Poppins'", align: 'center', color: '#1E293B', stroke: false },
-        { id: 'menu3', text: 'Lalapan', x: 900, y: 380, font: "600 22px 'Poppins'", align: 'center', color: '#1E293B', stroke: false },
-        { id: 'menu4', text: 'Anggur Merah', x: 180, y: 580, font: "600 22px 'Poppins'", align: 'center', color: '#1E293B', stroke: false },
-        { id: 'menu5', text: 'Nasi Putih', x: 900, y: 580, font: "600 22px 'Poppins'", align: 'center', color: '#1E293B', stroke: false },
-        { id: 'tiktok', text: 'TikTok: @SppgPanjatan002', x: 540, y: 1040, font: "600 20px 'Poppins'", align: 'center', color: '#64748B', stroke: false }
+        { id: 'dateText', text: '', x: 1020, y: 270, font: "400 24px 'Pacifico'", align: 'right', color: '#001F54', stroke: true },
+        { id: 'menu1', text: 'Ayam Bakar Madu', x: 540, y: 280, font: "400 32px 'Pacifico'", align: 'center', color: '#222', stroke: true },
+        { id: 'menu2', text: 'Tahu Goreng', x: 200, y: 380, font: "400 28px 'Pacifico'", align: 'center', color: '#222', stroke: true },
+        { id: 'menu3', text: 'Lalapan', x: 880, y: 380, font: "400 28px 'Pacifico'", align: 'center', color: '#222', stroke: true },
+        { id: 'menu4', text: 'Anggur Merah', x: 200, y: 560, font: "400 28px 'Pacifico'", align: 'center', color: '#222', stroke: true },
+        { id: 'menu5', text: 'Nasi Putih', x: 880, y: 560, font: "400 28px 'Pacifico'", align: 'center', color: '#222', stroke: true },
+        { id: 'tiktok', text: 'TikTok: @SppgPanjatan002', x: 540, y: 1040, font: "600 24px 'Outfit'", align: 'center', color: '#000', stroke: false }
     ];
 
     let isDragging = false, dragType = null, dragIndex = -1;
+    let startX, startY;
 
-    document.fonts.ready.then(() => draw());
-    bgImg.onload = () => { bgLoaded = true; draw(); }
+    // Format Tanggal Indonesia
+    function getIndonesianDate(dateString) {
+        if (!dateString) return '';
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        const d = new Date(dateString);
+        return d.toLocaleDateString('id-ID', options);
+    }
 
-    document.getElementById('foodInput').addEventListener('change', function(e) {
+    // Load Init & LocalStorage Check
+    document.fonts.ready.then(() => {
+        // Cek apakah ada background tersimpan di browser
+        const savedBg = localStorage.getItem('sppg_saved_bg');
+        if (savedBg) {
+            bgImg.src = savedBg;
+            bgImg.onload = () => { bgLoaded = true; draw(); }
+        }
+
+        // Set tanggal hari ini ke DatePicker
+        const datePicker = document.getElementById('datePicker');
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        datePicker.value = `${yyyy}-${mm}-${dd}`;
+        textObjects[0].text = getIndonesianDate(datePicker.value);
+        
+        draw();
+    });
+
+    // Upload Background & Save to LocalStorage
+    document.getElementById('bgInput').addEventListener('change', function(e) {
         if (!e.target.files[0]) return;
         const reader = new FileReader();
-        reader.onload = function(event){ foodImg.src = event.target.result; foodImg.onload = () => { foodLoaded = true; draw(); } }
+        reader.onload = function(event) {
+            const base64Str = event.target.result;
+            bgImg.src = base64Str;
+            bgImg.onload = () => { bgLoaded = true; draw(); }
+            
+            // Simpan ke Local Storage (Limit browser biasanya ~5MB)
+            try {
+                localStorage.setItem('sppg_saved_bg', base64Str);
+            } catch (err) {
+                alert("Waduh, ukuran background kamu kegedean nih buat disimpen otomatis di browser (maks 5MB). Coba compress dulu fotonya ya! 🥲");
+            }
+        }
         reader.readAsDataURL(e.target.files[0]);
     });
 
-    // Fitur Stiker & Eraser tetap berjalan sama...
-    // (Aku ringkas bagian ini agar fokus ke fitur baru, logika stiker lamamu tetap jalan)
+    // Reset Background
+    window.resetBackground = function() {
+        localStorage.removeItem('sppg_saved_bg');
+        bgImg.src = '';
+        bgLoaded = false;
+        document.getElementById('bgInput').value = '';
+        draw();
+    }
+
+    // Event Date Picker
+    document.getElementById('datePicker').addEventListener('change', function() {
+        textObjects[0].text = getIndonesianDate(this.value);
+        draw();
+    });
+
+    // Upload Food
+    document.getElementById('foodInput').addEventListener('change', function(e) {
+        if (!e.target.files[0]) return;
+        const reader = new FileReader();
+        reader.onload = function(event){ 
+            foodImg.src = event.target.result; 
+            foodImg.onload = () => { foodLoaded = true; draw(); }
+        }
+        reader.readAsDataURL(e.target.files[0]);
+    });
+
+    // Upload Stickers via Input File
+    document.getElementById('stickerInput').addEventListener('change', function(e) {
+        handleStickerFiles(e.target.files);
+    });
+
+    // DRAG & DROP CANVAS
+    const dropZone = document.getElementById('dropZone');
+    
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('drag-over');
+    });
+    
+    dropZone.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('drag-over');
+    });
+    
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('drag-over');
+        
+        const files = e.dataTransfer.files;
+        if(files.length > 0) {
+            handleStickerFiles(files);
+        }
+    });
+
+    // Universal Sticker Handler
+    function handleStickerFiles(files) {
+        if (!files || !files.length) return;
+        const autoRemove = document.getElementById('autoRemoveBg').checked;
+
+        Array.from(files).forEach(file => {
+            if (!file.type.startsWith('image/')) return;
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                let tempImg = new Image();
+                tempImg.onload = function() {
+                    if (autoRemove) {
+                        processMagicEraser(tempImg, (processedImg) => pushSticker(processedImg));
+                    } else {
+                        pushSticker(tempImg);
+                    }
+                }
+                tempImg.src = event.target.result;
+            }
+            reader.readAsDataURL(file);
+        });
+    }
+
+    function processMagicEraser(imgElement, callback) {
+        const c = document.createElement('canvas');
+        c.width = imgElement.width; c.height = imgElement.height;
+        const cx = c.getContext('2d');
+        cx.drawImage(imgElement, 0, 0);
+        let imgData = cx.getImageData(0, 0, c.width, c.height);
+        let data = imgData.data;
+        for(let i = 0; i < data.length; i += 4) {
+            // Hapus pixel putih
+            if (data[i] > 230 && data[i+1] > 230 && data[i+2] > 230) data[i+3] = 0;
+        }
+        cx.putImageData(imgData, 0, 0);
+        let newImg = new Image(); newImg.onload = function() { callback(newImg); }; newImg.src = c.toDataURL();
+    }
+
+    function pushSticker(loadedImg) {
+        stickers.push({
+            img: loadedImg,
+            x: 540 - (loadedImg.width/2),
+            y: 540 - (loadedImg.height/2),
+            baseWidth: loadedImg.width,
+            baseHeight: loadedImg.height,
+            scale: 1.0,
+            layer: 'top' 
+        });
+        selectSticker(stickers.length - 1);
+        draw();
+    }
+
+    function selectSticker(index) {
+        selectedStickerIndex = index;
+        const ui = document.getElementById('selectedStickerUI');
+        const msg = document.getElementById('noStickerMsg');
+        
+        if (index === -1) {
+            ui.style.display = 'none'; msg.style.display = 'block';
+        } else {
+            ui.style.display = 'block'; msg.style.display = 'none';
+            document.getElementById('stickerScale').value = stickers[index].scale;
+            updateLayerButtons(stickers[index].layer);
+        }
+        draw();
+    }
+
+    function updateLayerButtons(layer) {
+        document.getElementById('btnLayerBottom').className = layer === 'bottom' ? 'btn-layer active' : 'btn-layer';
+        document.getElementById('btnLayerTop').className = layer === 'top' ? 'btn-layer active' : 'btn-layer';
+    }
+
+    window.setStickerLayer = function(layer) {
+        if (selectedStickerIndex !== -1) {
+            stickers[selectedStickerIndex].layer = layer;
+            updateLayerButtons(layer);
+            draw();
+        }
+    }
+
+    window.resizeSelectedSticker = function() {
+        if (selectedStickerIndex !== -1) {
+            stickers[selectedStickerIndex].scale = parseFloat(document.getElementById('stickerScale').value);
+            draw();
+        }
+    }
+
+    window.deleteSelectedSticker = function() {
+        if (selectedStickerIndex !== -1) {
+            stickers.splice(selectedStickerIndex, 1);
+            selectSticker(-1);
+        }
+    }
     window.updateText = function(id, idx) { textObjects[idx].text = document.getElementById(id).value; draw(); }
 
     // --- DRAW UTAMA ---
     function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        // 1. BG
-        if (bgLoaded && backgroundBase64.length > 100) ctx.drawImage(bgImg, 0, 0, 1080, 1080);
-        else { ctx.fillStyle = "#F8FAFC"; ctx.fillRect(0,0,1080,1080); }
 
-        // 2. Food dengan Shadow Modern
-        if (foodLoaded) {
-            const fx=280, fy=300, fw=520, fh=360;
-            ctx.shadowColor = 'rgba(0, 0, 0, 0.15)'; ctx.shadowBlur = 30; ctx.shadowOffsetY = 15;
-            ctx.save(); ctx.beginPath(); ctx.roundRect(fx, fy, fw, fh, 30); ctx.clip();
-            ctx.drawImage(foodImg, fx, fy, fw, fh); ctx.restore();
-            ctx.shadowColor = 'transparent'; // Reset
-            ctx.lineWidth=8; ctx.strokeStyle="#ffffff"; ctx.strokeRect(fx, fy, fw, fh);
+        // 1. BG
+        if (bgLoaded) {
+            ctx.drawImage(bgImg, 0, 0, 1080, 1080);
+        } else { 
+            ctx.fillStyle = "#fff"; ctx.fillRect(0,0,1080,1080); 
+            ctx.fillStyle="red"; ctx.font="800 30px Outfit"; ctx.textAlign="center"; 
+            ctx.fillText("⚠️ UPLOAD BACKGROUND DI BAWAH ⚠️", 540,540); 
         }
 
-        // 3. TABEL GIZI (PROGRESS BAR PERSEGI PANJANG)
-        drawNutritionBars();
+        // 2. Food
+        if (foodLoaded) {
+            const fx=280, fy=280, fw=520, fh=380;
+            ctx.save(); ctx.beginPath(); ctx.roundRect(fx, fy, fw, fh, 30); ctx.clip();
+            ctx.drawImage(foodImg, fx, fy, fw, fh); ctx.restore();
+            ctx.lineWidth=8; ctx.strokeStyle="#fff"; ctx.strokeRect(fx, fy, fw, fh);
+        }
 
-        // 4. Texts
+        // 3. Stickers (LAYER BOTTOM)
+        stickers.forEach((s) => { if (s.layer === 'bottom') drawSingleSticker(s); });
+
+        // 4. TABEL GIZI
+        drawNutritionTable();
+
+        // 5. Texts
         textObjects.forEach(obj => {
             ctx.font = obj.font; ctx.textAlign = obj.align;
-            if(obj.stroke) { ctx.lineWidth=6; ctx.strokeStyle="white"; ctx.strokeText(obj.text, obj.x, obj.y); }
+            if(obj.stroke) { 
+                ctx.lineWidth=5; ctx.strokeStyle="white"; 
+                ctx.lineJoin="round"; ctx.miterLimit=2;
+                ctx.strokeText(obj.text, obj.x, obj.y); 
+            }
             ctx.fillStyle = obj.color; ctx.fillText(obj.text, obj.x, obj.y);
         });
+
+        // 6. Stickers (LAYER TOP)
+        stickers.forEach((s) => { if (s.layer === 'top') drawSingleSticker(s); });
+
+        // 7. Selection Box untuk Stiker
+        if (selectedStickerIndex !== -1) {
+            const s = stickers[selectedStickerIndex];
+            const w = s.baseWidth * s.scale; const h = s.baseHeight * s.scale;
+            ctx.strokeStyle = "#7F00FF"; ctx.lineWidth = 3; ctx.setLineDash([15, 10]);
+            ctx.strokeRect(s.x, s.y, w, h); ctx.setLineDash([]);
+        }
     }
 
-    // --- FITUR BARU: VISUALISASI PROGRESS BAR ---
-    function drawNutritionBars() {
-        let k_e = document.getElementById('k_energi').value || 0; let k_p = document.getElementById('k_protein').value || 0; let k_l = document.getElementById('k_lemak').value || 0; let k_k = document.getElementById('k_karbo').value || 0;
-        let b_e = document.getElementById('b_energi').value || 0; let b_p = document.getElementById('b_protein').value || 0; let b_l = document.getElementById('b_lemak').value || 0; let b_k = document.getElementById('b_karbo').value || 0;
+    function drawSingleSticker(s) {
+        if (!s.img.complete) return;
+        const w = s.baseWidth * s.scale; const h = s.baseHeight * s.scale;
+        ctx.drawImage(s.img, s.x, s.y, w, h);
+    }
 
-        ctx.fillStyle = "#2563EB"; ctx.beginPath(); ctx.roundRect(340, 700, 400, 50, 25); ctx.fill();
-        ctx.fillStyle = "white"; ctx.font = "700 24px 'Poppins'"; ctx.textAlign = "center";
-        ctx.fillText("📊 KANDUNGAN GIZI (Klik Disini)", 540, 734);
+    function drawNutritionTable() {
+        let k_e = document.getElementById('k_energi').value || 0;
+        let k_p = document.getElementById('k_protein').value || 0;
+        let k_l = document.getElementById('k_lemak').value || 0;
+        let k_k = document.getElementById('k_karbo').value || 0;
+        let k_s = document.getElementById('k_serat').value || 0;
 
-        function renderBar(x, y, label, val, maxVal, color) {
-            let pct = Math.min((val / maxVal), 1);
-            let barWidth = 320; let currentWidth = barWidth * pct;
+        let b_e = document.getElementById('b_energi').value || 0;
+        let b_p = document.getElementById('b_protein').value || 0;
+        let b_l = document.getElementById('b_lemak').value || 0;
+        let b_k = document.getElementById('b_karbo').value || 0;
+        let b_s = document.getElementById('b_serat').value || 0;
+
+        // Header Gizi
+        ctx.fillStyle = "#111"; ctx.beginPath(); ctx.roundRect(330, 680, 420, 50, 25); ctx.fill();
+        ctx.fillStyle = "white"; ctx.font = "800 24px 'Outfit'"; ctx.textAlign = "center";
+        ctx.fillText("⚡ KANDUNGAN GIZI ⚡", 540, 715);
+
+        function renderBox(x, title, e, p, l, k, s) {
+            // Box Frame
+            ctx.fillStyle = "rgba(255, 255, 255, 0.9)"; ctx.beginPath(); ctx.roundRect(x, 740, 400, 240, 25); ctx.fill();
+            ctx.strokeStyle = "#eee"; ctx.lineWidth = 2; ctx.stroke();
             
-            // Label Teks
-            ctx.fillStyle = "#1E293B"; ctx.font = "600 16px 'Poppins'"; ctx.textAlign = "left";
-            ctx.fillText(`${label} : ${val}`,
+            // Box Title
+            ctx.fillStyle = title === 'Porsi Kecil' ? "#7F00FF" : "#E100FF"; 
+            ctx.beginPath(); ctx.roundRect(x, 740, 400, 50, [25, 25, 0, 0]); ctx.fill();
+            ctx.fillStyle = "white"; ctx.font = "800 24px 'Outfit'"; ctx.textAlign = "center";
+            ctx.fillText(title, x + 200, 775);
+            
+            // Texts
+            ctx.fillStyle = "#333"; ctx.font = "600 22px 'Outfit'"; ctx.textAlign = "left";
+            const startY = 825; const gap = 35; const textX = x + 30;
+            ctx.fillText(`🔥 Energi : ${e} kkal`, textX, startY);
+            ctx.fillText(`🥩 Protein : ${p} gr`, textX, startY + gap);
+            ctx.fillText(`🧈 Lemak : ${l} gr`, textX, startY + gap*2);
+            ctx.fillText(`🍚 Karbohidrat : ${k} gr`, textX, startY + gap*3);
+            ctx.fillText(`🥦 Serat : ${s} gr`, textX, startY + gap*4);
+        }
+        renderBox(100, "Porsi Kecil", k_e, k_p, k_l, k_k, k_s);
+        renderBox(580, "Porsi Besar", b_e, b_p, b_l, b_k, b_s);
+    }
+
+    document.querySelectorAll('input').forEach(item => { item.addEventListener('input', draw); });
+
+    function getMousePos(evt) {
+        var rect = canvas.getBoundingClientRect();
+        var scaleX = canvas.width / rect.width; var scaleY = canvas.height / rect.height;
+        let cx = evt.clientX; let cy = evt.clientY;
+        if(evt.touches && evt.touches.length > 0) { cx = evt.touches[0].clientX; cy = evt.touches[0].clientY; }
+        return { x: (cx - rect.left) * scaleX, y: (cy - rect.top) * scaleY };
+    }
+
+    function isHitText(pos, obj) {
+        ctx.font = obj.font; const w = ctx.measureText(obj.text).width;
+        let sx = obj.x; if(obj.align==='center') sx = obj.x - w/2; else if(obj.align==='right') sx = obj.x - w;
+        return pos.x >= sx-20 && pos.x <= sx+w+20 && pos.y >= obj.y-40 && pos.y <= obj.y+20;
+    }
+    function isHitSticker(pos, s) { const w=s.baseWidth*s.scale; const h=s.baseHeight*s.scale; return pos.x >= s.x && pos.x <= s.x+w && pos.y >= s.y && pos.y <= s.y+h; }
+
+    canvas.addEventListener('mousedown', startDrag); canvas.addEventListener('touchstart', startDrag, {passive:false});
+    canvas.addEventListener('mousemove', moveDrag); canvas.addEventListener('touchmove', moveDrag, {passive:false});
+    canvas.addEventListener('mouseup', endDrag); canvas.addEventListener('touchend', endDrag);
+
+    function startDrag(e) {
+        const pos = getMousePos(e);
+        for (let i = stickers.length - 1; i >= 0; i--) {
+            if (stickers[i].layer === 'top' && isHitSticker(pos, stickers[i])) { 
+                e.preventDefault(); isDragging=true; dragType='sticker'; dragIndex=i; selectSticker(i); startX=pos.x; startY=pos.y; return; 
+            }
+        }
+        for (let i = textObjects.length - 1; i >= 0; i--) {
+            if (isHitText(pos, textObjects[i])) { 
+                e.preventDefault(); isDragging=true; dragType='text'; dragIndex=i; selectSticker(-1); startX=pos.x; startY=pos.y; return; 
+            }
+        }
+        for (let i = stickers.length - 1; i >= 0; i--) {
+            if (stickers[i].layer === 'bottom' && isHitSticker(pos, stickers[i])) { 
+                e.preventDefault(); isDragging=true; dragType='sticker'; dragIndex=i; selectSticker(i); startX=pos.x; startY=pos.y; return; 
+            }
+        }
+        selectSticker(-1);
+    }
+    
+    function moveDrag(e) {
+        if (isDragging) {
+            e.preventDefault(); const pos=getMousePos(e);
+            if (dragType==='text') { textObjects[dragIndex].x=pos.x; textObjects[dragIndex].y=pos.y; }
+            else if (dragType==='sticker') { const s=stickers[dragIndex]; const w=s.baseWidth*s.scale; const h=s.baseHeight*s.scale; s.x=pos.x-w/2; s.y=pos.y-h/2; }
+            draw();
+        }
+    }
+    function endDrag() { isDragging=false; dragIndex=-1; }
+
+    // DOWNLOAD
+    window.downloadImage = function() {
+        const link = document.createElement('a'); link.download = 'Menu_SPPG_GenZ.png'; link.href = canvas.toDataURL(); link.click();
+    }
+
+    // COPY TO CLIPBOARD
+    window.copyImageToClipboard = async function() {
+        const tempSelectedIndex = selectedStickerIndex;
+        selectedStickerIndex = -1;
+        draw(); 
+        
+        try {
+            canvas.toBlob(async (blob) => {
+                const item = new ClipboardItem({ "image/png": blob });
+                await navigator.clipboard.write([item]);
+                alert("✨ Yasss! Gambar berhasil disalin ke clipboard! Tinggal paste (Ctrl+V) di WA atau sosmed. 📋🔥");
+            });
+        } catch (err) {
+            console.error(err);
+            alert("🥲 Yah gagal copy. Browser kamu mungkin belum support fitur ini. Pake tombol download aja ya!");
+        } finally {
+            selectedStickerIndex = tempSelectedIndex;
+            draw();
+        }
+    }
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        document.onkeydown = function(e) {
+            // Mematikan F12, Ctrl+U, Ctrl+S, Ctrl+Shift+I
+            if (e.keyCode === 123 || 
+                (e.ctrlKey && (e.keyCode === 85 || e.keyCode === 83)) || 
+                (e.ctrlKey && e.shiftKey && e.keyCode === 73)) {
+                return false;
+            }
+        };
+    </script>
+</body>
+</html>
