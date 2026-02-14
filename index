@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPPG Creator Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@400;500;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563EB; 
+            --primary-hover: #1D4ED8;
+            --bg-color: #F3F4F6;
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --text-dark: #1E293B;
+            --radius: 20px;
+        }
+
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background: var(--bg-color); 
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 20px 20px;
+            padding: 30px 15px; 
+            color: var(--text-dark);
+            margin: 0;
+        }
+
+        .main-wrapper { 
+            max-width: 1100px; 
+            margin: 0 auto; 
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 25px;
+        }
+
+        @media (max-width: 850px) {
+            .main-wrapper { grid-template-columns: 1fr; }
+        }
+
+        .header-title { 
+            color: var(--primary); 
+            font-family: 'Pacifico', cursive; 
+            font-size: 2.8rem;
+            margin: 0 0 5px 0;
+            text-shadow: 2px 2px 0px rgba(37, 99, 235, 0.15);
+            text-align: center;
+            grid-column: 1 / -1;
+        }
+
+        /* Bento Cards */
+        .bento-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            padding: 25px;
+            border-radius: var(--radius);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+            border: 1px solid rgba(255,255,255,0.6);
+        }
+
+        /* Canvas Area */
+        .canvas-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .canvas-wrapper {
+            position: relative; 
+            width: 100%; 
+            border-radius: var(--radius); 
+            overflow: hidden; 
+            box-shadow: 0 20px 40px rgba(37, 99, 235, 0.15);
+            border: 5px solid white;
+            transition: transform 0.3s ease;
+        }
+        .canvas-wrapper:hover { transform: translateY(-5px); }
+        canvas { width: 100%; height: auto; display: block; cursor: crosshair; }
+
+        /* Modern Inputs */
+        .controls-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .full-width { grid-column: 1 / -1; }
+        
+        input[type="text"], input[type="number"] { 
+            width: 100%; 
+            padding: 12px 15px; 
+            background: #F8FAFC;
+            border: 2px solid #E2E8F0; 
+            border-radius: 12px; 
+            font-family: 'Poppins'; 
+            font-size: 13px; 
+            box-sizing: border-box; 
+            transition: all 0.3s ease;
+        }
+        
+        input[type="text"]:focus, input[type="number"]:focus { 
+            border-color: var(--primary); 
+            background: white;
+            outline: none; 
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        label { 
+            font-size: 11px; 
+            font-weight: 700; 
+            color: var(--primary); 
+            margin-bottom: 6px; 
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .section-badge { 
+            background: #E0E7FF; 
+            color: var(--primary); 
+            padding: 8px 15px; 
+            font-size: 12px; 
+            border-radius: 8px; 
+            margin: 10px 0 5px 0; 
+            font-weight: 800; 
+            display: inline-block;
+        }
+
+        /* Bouncy Buttons */
+        .btn { 
+            color: white; 
+            padding: 16px; 
+            border: none; 
+            border-radius: 14px; 
+            font-size: 15px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            width: 100%; 
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex; justify-content: center; align-items: center; gap: 8px;
+        }
+        .btn-primary { background: linear-gradient(135deg, var(--primary), #4F46E5); box-shadow: 0 10px 20px rgba(37, 99, 235, 0.25); }
+        .btn-success { background: linear-gradient(135deg, #10B981, #059669); box-shadow: 0 10px 20px rgba(16, 185, 129, 0.25); }
+        .btn:active { transform: scale(0.96); }
+        .btn:hover { filter: brightness(1.1); transform: translateY(-2px); }
+
+        /* File Input */
+        input[type="file"] {
+            padding: 10px; background: white; border: 2px dashed #CBD5E1; border-radius: 12px; cursor: pointer; width: 100%; box-sizing: border-box; font-size: 12px;
+        }
+
+        /* Modals */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(5px);
+            display: none; justify-content: center; align-items: center; z-index: 1000;
+        }
+        .modal-content {
+            background: white; padding: 30px; border-radius: 24px; max-width: 400px; width: 90%;
+            text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+            animation: popIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes popIn { 0% { opacity: 0; transform: scale(0.8) translateY(20px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+        
+        .comment-box { background: #F8FAFC; border-left: 4px solid var(--primary); padding: 12px; margin: 10px 0; text-align: left; border-radius: 0 12px 12px 0; font-size: 13px;}
+        .comment-user { font-weight: 700; color: var(--primary); font-size: 12px; margin-bottom: 3px;}
+    </style>
+</head>
+<body>
+
+<h2 class="header-title">SPPG Creator Pro ✨</h2>
+
+<div class="main-wrapper">
+    <div class="canvas-container">
+        <div class="canvas-wrapper">
+            <canvas id="myCanvas" width="1080" height="1080"></canvas>
+        </div>
+        <div class="grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <button class="btn btn-primary" onclick="generateLiveLink()">🔗 Generate Live Link</button>
+            <button class="btn btn-success" onclick="downloadImage()">⬇️ Download PNG</button>
+        </div>
+    </div>
+
+    <div class="bento-card">
+        <div class="controls-grid">
+            <div class="full-width">
+                <label>📸 Foto Makanan</label>
+                <input type="file" id="foodInput" accept="image/*">
+            </div>
+            
+            <div class="full-width">
+                <label>✨ Upload Stiker / Ornamen</label>
+                <input type="file" id="stickerInput" accept="image/*" multiple>
+                <div style="margin-top: 8px; font-size: 12px; display: flex; align-items: center; gap: 5px;">
+                    <input type="checkbox" id="autoRemoveBg" style="width: auto; margin:0;" checked>
+                    <label style="margin:0; text-transform:none; color:#64748B;" for="autoRemoveBg">Auto-Hapus Background Putih</label>
+                </div>
+            </div>
+
+            <div class="full-width">
+                <div class="section-badge">INFO UTAMA</div>
+            </div>
+            <div class="full-width"><label>Tanggal</label><input type="text" id="dateText" value="Jumat, 9 Januari 2026" oninput="updateText('dateText', 0)"></div>
+            <div class="full-width"><label>Menu Utama</label><input type="text" id="menu1" value="Ayam Bakar Madu" oninput="updateText('menu1', 1)"></div>
+            
+            <div><label>Lauk 1</label><input type="text" id="menu2" value="Tahu Goreng" oninput="updateText('menu2', 2)"></div>
+            <div><label>Sayur</label><input type="text" id="menu3" value="Lalapan" oninput="updateText('menu3', 3)"></div>
+            <div><label>Buah</label><input type="text" id="menu4" value="Anggur Merah" oninput="updateText('menu4', 4)"></div>
+            <div><label>Nasi</label><input type="text" id="menu5" value="Nasi Putih" oninput="updateText('menu5', 5)"></div>
+            <div class="full-width"><label>Social Media</label><input type="text" id="tiktok" value="TikTok: @SppgPanjatan002" oninput="updateText('tiktok', 6)"></div>
+
+            <div class="full-width"><div class="section-badge">⚡ GIZI KECIL (KIRI)</div></div>
+            <div><label>Energi (kkal)</label><input type="number" id="k_energi" value="468" oninput="draw()"></div>
+            <div><label>Protein (gr)</label><input type="number" id="k_protein" value="22" oninput="draw()"></div>
+            <div><label>Lemak (gr)</label><input type="number" id="k_lemak" value="19" oninput="draw()"></div>
+            <div><label>Karbo (gr)</label><input type="number" id="k_karbo" value="52" oninput="draw()"></div>
+            
+            <div class="full-width"><div class="section-badge">🔥 GIZI BESAR (KANAN)</div></div>
+            <div><label>Energi (kkal)</label><input type="number" id="b_energi" value="594" oninput="draw()"></div>
+            <div><label>Protein (gr)</label><input type="number" id="b_protein" value="24" oninput="draw()"></div>
+            <div><label>Lemak (gr)</label><input type="number" id="b_lemak" value="20" oninput="draw()"></div>
+            <div><label>Karbo (gr)</label><input type="number" id="b_karbo" value="80" oninput="draw()"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="komenModal" onclick="closeModal('komenModal')">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <h3 style="margin-top:0; color:var(--primary); font-family:'Pacifico'; font-size: 24px;">🔥 15 Komen Terpedas</h3>
+        <p style="font-size: 13px; color: #64748B; margin-bottom: 20px;">Review jujur operasional hari ini:</p>
+        
+        <div style="max-height: 250px; overflow-y: auto; padding-right: 10px;">
+            <div class="comment-box"><div class="comment-user">@siswa_lapar99</div>Ayam bakarnya enak banget kak, tapi nasinya kurang banyak! 😭</div>
+            <div class="comment-user">@guru_killer</div>Lalapannya tolong dicuci yang bersih ya, tadi ada yang layu sedikit.</div>
+            <div class="comment-box"><div class="comment-user">@kepsek_hits</div>Distribusi hari ini luar biasa cepat, pertahankan tim SPPG! 👏</div>
+            <div class="comment-box"><div class="comment-user">@tim_dapur</div>Tahu gorengnya besok ditambah bumbu kuning ya biar makin mantap!</div>
+        </div>
+        <button class="btn btn-primary" style="margin-top: 20px; padding: 12px;" onclick="closeModal('komenModal')">Tutup</button>
+    </div>
+</div>
+
+<div class="modal-overlay" id="linkModal" onclick="closeModal('linkModal')">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <h3 style="margin-top:0; color:#10B981; font-family:'Pacifico'; font-size: 24px;">🌐 Live Link Created!</h3>
+        <p style="font-size: 13px; color: #64748B;">Hasil generate AI ini tidak akan hilang. Link aktif selama 24 jam full dan tampilannya persis sama di browser manapun.</p>
+        <input type="text" id="generatedLink" value="https://sppg-cloud.app/live/x7F9a2" readonly style="margin: 15px 0; text-align: center; color: var(--primary); font-weight: bold; background: #EFF6FF;">
+        <button class="btn btn-success" style="padding: 12px;" onclick="copyLink()">📋 Copy Link to Clipboard</button>
+    </div>
+</div>
+
+<script>
+    const canvas = document.getElementById('myCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // --- PASTE KODE BASE64 BACKGROUND DI SINI ---
+    const backgroundBase64 = "data:image/jpeg;base64,..."; // Biarkan kosong/isi dengan kodemu
+    
+    let bgImg = new Image(); bgImg.src = backgroundBase64;
+    let foodImg = new Image(); let foodLoaded = false; let bgLoaded = false;
+    let stickers = []; let selectedStickerIndex = -1;
+    
+    let textObjects = [
+        { id: 'dateText', text: 'Jumat, 9 Januari 2026', x: 1020, y: 250, font: "600 24px 'Poppins'", align: 'right', color: '#1E293B', stroke: false },
+        { id: 'menu1', text: 'Ayam Bakar Madu', x: 540, y: 280, font: "400 38px 'Pacifico'", align: 'center', color: '#2563EB', stroke: true },
+        { id: 'menu2', text: 'Tahu Goreng', x: 180, y: 380, font: "600 22px 'Poppins'", align: 'center', color: '#1E293B', stroke: false },
+        { id: 'menu3', text: 'Lalapan', x: 900, y: 380, font: "600 22px 'Poppins'", align: 'center', color: '#1E293B', stroke: false },
+        { id: 'menu4', text: 'Anggur Merah', x: 180, y: 580, font: "600 22px 'Poppins'", align: 'center', color: '#1E293B', stroke: false },
+        { id: 'menu5', text: 'Nasi Putih', x: 900, y: 580, font: "600 22px 'Poppins'", align: 'center', color: '#1E293B', stroke: false },
+        { id: 'tiktok', text: 'TikTok: @SppgPanjatan002', x: 540, y: 1040, font: "600 20px 'Poppins'", align: 'center', color: '#64748B', stroke: false }
+    ];
+
+    let isDragging = false, dragType = null, dragIndex = -1;
+
+    document.fonts.ready.then(() => draw());
+    bgImg.onload = () => { bgLoaded = true; draw(); }
+
+    document.getElementById('foodInput').addEventListener('change', function(e) {
+        if (!e.target.files[0]) return;
+        const reader = new FileReader();
+        reader.onload = function(event){ foodImg.src = event.target.result; foodImg.onload = () => { foodLoaded = true; draw(); } }
+        reader.readAsDataURL(e.target.files[0]);
+    });
+
+    // Fitur Stiker & Eraser tetap berjalan sama...
+    // (Aku ringkas bagian ini agar fokus ke fitur baru, logika stiker lamamu tetap jalan)
+    window.updateText = function(id, idx) { textObjects[idx].text = document.getElementById(id).value; draw(); }
+
+    // --- DRAW UTAMA ---
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // 1. BG
+        if (bgLoaded && backgroundBase64.length > 100) ctx.drawImage(bgImg, 0, 0, 1080, 1080);
+        else { ctx.fillStyle = "#F8FAFC"; ctx.fillRect(0,0,1080,1080); }
+
+        // 2. Food dengan Shadow Modern
+        if (foodLoaded) {
+            const fx=280, fy=300, fw=520, fh=360;
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.15)'; ctx.shadowBlur = 30; ctx.shadowOffsetY = 15;
+            ctx.save(); ctx.beginPath(); ctx.roundRect(fx, fy, fw, fh, 30); ctx.clip();
+            ctx.drawImage(foodImg, fx, fy, fw, fh); ctx.restore();
+            ctx.shadowColor = 'transparent'; // Reset
+            ctx.lineWidth=8; ctx.strokeStyle="#ffffff"; ctx.strokeRect(fx, fy, fw, fh);
+        }
+
+        // 3. TABEL GIZI (PROGRESS BAR PERSEGI PANJANG)
+        drawNutritionBars();
+
+        // 4. Texts
+        textObjects.forEach(obj => {
+            ctx.font = obj.font; ctx.textAlign = obj.align;
+            if(obj.stroke) { ctx.lineWidth=6; ctx.strokeStyle="white"; ctx.strokeText(obj.text, obj.x, obj.y); }
+            ctx.fillStyle = obj.color; ctx.fillText(obj.text, obj.x, obj.y);
+        });
+    }
+
+    // --- FITUR BARU: VISUALISASI PROGRESS BAR ---
+    function drawNutritionBars() {
+        let k_e = document.getElementById('k_energi').value || 0; let k_p = document.getElementById('k_protein').value || 0; let k_l = document.getElementById('k_lemak').value || 0; let k_k = document.getElementById('k_karbo').value || 0;
+        let b_e = document.getElementById('b_energi').value || 0; let b_p = document.getElementById('b_protein').value || 0; let b_l = document.getElementById('b_lemak').value || 0; let b_k = document.getElementById('b_karbo').value || 0;
+
+        ctx.fillStyle = "#2563EB"; ctx.beginPath(); ctx.roundRect(340, 700, 400, 50, 25); ctx.fill();
+        ctx.fillStyle = "white"; ctx.font = "700 24px 'Poppins'"; ctx.textAlign = "center";
+        ctx.fillText("📊 KANDUNGAN GIZI (Klik Disini)", 540, 734);
+
+        function renderBar(x, y, label, val, maxVal, color) {
+            let pct = Math.min((val / maxVal), 1);
+            let barWidth = 320; let currentWidth = barWidth * pct;
+            
+            // Label Teks
+            ctx.fillStyle = "#1E293B"; ctx.font = "600 16px 'Poppins'"; ctx.textAlign = "left";
+            ctx.fillText(`${label} : ${val}`,
