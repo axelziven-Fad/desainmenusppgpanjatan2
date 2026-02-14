@@ -628,7 +628,9 @@
             draw();
         }
     }
+
         document.addEventListener('contextmenu', event => event.preventDefault());
+
         document.onkeydown = function(e) {
             // Mematikan F12, Ctrl+U, Ctrl+S, Ctrl+Shift+I
             if (e.keyCode === 123 || 
@@ -637,6 +639,7 @@
                 return false;
             }
         };
-    </script>
+</script>
+
 </body>
 </html>
