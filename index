@@ -24,6 +24,9 @@
             display: flex;
             justify-content: center;
             color: #333;
+            /* Tambahan CSS biar teks nggak bisa di-blok/highlight */
+            user-select: none;
+            -webkit-user-select: none;
         }
 
         @keyframes gradientBG {
@@ -243,7 +246,7 @@
     let stickers = [];
     let selectedStickerIndex = -1;
     
-    // Teks Init - Menggunakan style yang proporsional
+    // Teks Init
     let textObjects = [
         { id: 'dateText', text: '', x: 1020, y: 270, font: "400 24px 'Pacifico'", align: 'right', color: '#001F54', stroke: true },
         { id: 'menu1', text: 'Ayam Bakar Madu', x: 540, y: 280, font: "400 32px 'Pacifico'", align: 'center', color: '#222', stroke: true },
@@ -267,14 +270,12 @@
 
     // Load Init & LocalStorage Check
     document.fonts.ready.then(() => {
-        // Cek apakah ada background tersimpan di browser
         const savedBg = localStorage.getItem('sppg_saved_bg');
         if (savedBg) {
             bgImg.src = savedBg;
             bgImg.onload = () => { bgLoaded = true; draw(); }
         }
 
-        // Set tanggal hari ini ke DatePicker
         const datePicker = document.getElementById('datePicker');
         const today = new Date();
         const yyyy = today.getFullYear();
@@ -295,7 +296,6 @@
             bgImg.src = base64Str;
             bgImg.onload = () => { bgLoaded = true; draw(); }
             
-            // Simpan ke Local Storage (Limit browser biasanya ~5MB)
             try {
                 localStorage.setItem('sppg_saved_bg', base64Str);
             } catch (err) {
@@ -314,13 +314,11 @@
         draw();
     }
 
-    // Event Date Picker
     document.getElementById('datePicker').addEventListener('change', function() {
         textObjects[0].text = getIndonesianDate(this.value);
         draw();
     });
 
-    // Upload Food
     document.getElementById('foodInput').addEventListener('change', function(e) {
         if (!e.target.files[0]) return;
         const reader = new FileReader();
@@ -331,12 +329,10 @@
         reader.readAsDataURL(e.target.files[0]);
     });
 
-    // Upload Stickers via Input File
     document.getElementById('stickerInput').addEventListener('change', function(e) {
         handleStickerFiles(e.target.files);
     });
 
-    // DRAG & DROP CANVAS
     const dropZone = document.getElementById('dropZone');
     
     dropZone.addEventListener('dragover', (e) => {
@@ -359,7 +355,6 @@
         }
     });
 
-    // Universal Sticker Handler
     function handleStickerFiles(files) {
         if (!files || !files.length) return;
         const autoRemove = document.getElementById('autoRemoveBg').checked;
@@ -390,7 +385,6 @@
         let imgData = cx.getImageData(0, 0, c.width, c.height);
         let data = imgData.data;
         for(let i = 0; i < data.length; i += 4) {
-            // Hapus pixel putih
             if (data[i] > 230 && data[i+1] > 230 && data[i+2] > 230) data[i+3] = 0;
         }
         cx.putImageData(imgData, 0, 0);
@@ -454,7 +448,6 @@
     }
     window.updateText = function(id, idx) { textObjects[idx].text = document.getElementById(id).value; draw(); }
 
-    // --- DRAW UTAMA ---
     function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -552,8 +545,6 @@
         renderBox(580, "Porsi Besar", b_e, b_p, b_l, b_k, b_s);
     }
 
-    document.querySelectorAll('input').forEach(item => { item.addEventListener('input', draw); });
-
     function getMousePos(evt) {
         var rect = canvas.getBoundingClientRect();
         var scaleX = canvas.width / rect.width; var scaleY = canvas.height / rect.height;
@@ -629,16 +620,23 @@
         }
     }
 
-        document.addEventListener('contextmenu', event => event.preventDefault());
+    // --- FITUR KEAMANAN (ANTI INSPECT & CTRL+U) ---
+    // Matikan Klik Kanan
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+    });
 
-        document.onkeydown = function(e) {
-            // Mematikan F12, Ctrl+U, Ctrl+S, Ctrl+Shift+I
-            if (e.keyCode === 123 || 
-                (e.ctrlKey && (e.keyCode === 85 || e.keyCode === 83)) || 
-                (e.ctrlKey && e.shiftKey && e.keyCode === 73)) {
-                return false;
-            }
-        };
+    // Matikan Shortcut Keyboard (F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U, dll)
+    document.addEventListener('keydown', function(e) {
+        if (
+            e.key === 'F12' || 
+            (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) || 
+            (e.ctrlKey && (e.key === 'U' || e.key === 'u'))
+        ) {
+            e.preventDefault();
+            return false;
+        }
+    });
 </script>
 
 </body>
